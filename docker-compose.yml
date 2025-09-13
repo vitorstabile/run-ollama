@@ -1,0 +1,25 @@
+version: "3.9"
+
+services:
+  ollama:
+    image: ollama-with-deepseek-1.5b
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    environment:
+      OLLAMA_KEEP_ALIVE: "5m0s"
+      OLLAMA_MAX_LOADED_MODELS: 1
+      OLLAMA_NUM_PARALLEL: 2
+      OLLAMA_CONTEXT_LENGTH: 2048
+    restart: unless-stopped
+
+  openwebui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: open-webui
+    ports:
+      - "3000:8080"
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      - OLLAMA_API_BASE=http://host.docker.internal:11434
